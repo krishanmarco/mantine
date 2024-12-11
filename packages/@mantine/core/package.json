@@ -1,6 +1,6 @@
 {
-  "name": "@mantine/core",
-  "version": "7.15.0",
+  "name": "@epilogo/mantine-core",
+  "version": "7.15.0-p1",
   "description": "React components library focused on usability, accessibility and developer experience",
   "homepage": "https://mantine.dev/",
   "license": "MIT",
