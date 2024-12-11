@@ -286,6 +286,21 @@ export function ToggleLoading() {
   );
 }
 
+export function ToggleLoadingWithoutTransition() {
+  const [loading, setLoading] = useState(false);
+  return (
+    <div style={{ padding: 40, display: 'flex', gap: 20 }}>
+      <Button loading={loading} size="lg" overrideTransitionProps={null}>
+        Save to database
+      </Button>
+
+      <Button onClick={() => setLoading((l) => !l)} size="lg">
+        Toggle loading state
+      </Button>
+    </div>
+  );
+}
+
 export function Disabled() {
   return (
     <div style={{ padding: 40, display: 'flex', gap: 20 }}>

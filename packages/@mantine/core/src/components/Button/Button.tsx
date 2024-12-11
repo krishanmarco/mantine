@@ -17,7 +17,7 @@ import {
   useStyles,
 } from '../../core';
 import { Loader, LoaderProps } from '../Loader';
-import { MantineTransition, Transition } from '../Transition';
+import { MantineTransition, Transition, TransitionProps } from '../Transition';
 import { UnstyledButton } from '../UnstyledButton';
 import { ButtonGroup } from './ButtonGroup/ButtonGroup';
 import { ButtonGroupSection } from './ButtonGroupSection/ButtonGroupSection';
@@ -89,6 +89,10 @@ export interface ButtonProps extends BoxProps, StylesApiProps<ButtonFactory> {
 
   /** Determines whether button text color with filled variant should depend on `background-color`. If luminosity of the `color` prop is less than `theme.luminosityThreshold`, then `theme.white` will be used for text color, otherwise `theme.black`. Overrides `theme.autoContrast`. */
   autoContrast?: boolean;
+
+  overrideTransitionProps?:
+    | null
+    | ((tp: Omit<TransitionProps, 'children'>) => Omit<TransitionProps, 'children'>);
 }
 
 export type ButtonFactory = PolymorphicFactory<{
@@ -203,17 +207,42 @@ export const Button = polymorphicFactory<ButtonFactory>((_props, ref) => {
       ]}
       {...others}
     >
-      <Transition mounted={!!loading} transition={loaderTransition} duration={150}>
-        {(transitionStyles) => (
-          <Box component="span" {...getStyles('loader', { style: transitionStyles })} aria-hidden>
-            <Loader
-              color="var(--button-color)"
-              size="calc(var(--button-height) / 1.8)"
-              {...loaderProps}
-            />
-          </Box>
-        )}
-      </Transition>
+      {props.overrideTransitionProps === null ? (
+        loading ? (
+          <Loader
+            color="var(--button-color)"
+            size="calc(var(--button-height) / 1.8)"
+            styles={{
+              root: {
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              },
+            }}
+            {...loaderProps}
+          />
+        ) : null
+      ) : (
+        <Transition
+          {...(props.overrideTransitionProps ?? ((id) => id))({
+            mounted: !!loading,
+            duration: 150,
+            transition: loaderTransition,
+          })}
+        >
+          {(transitionStyles) => (
+            <Box component="span" {...getStyles('loader', { style: transitionStyles })} aria-hidden>
+              <Loader
+                color="var(--button-color)"
+                size="calc(var(--button-height) / 1.8)"
+                {...loaderProps}
+              />
+            </Box>
+          )}
+        </Transition>
+      )}
 
       <span {...getStyles('inner')}>
         {leftSection && (
