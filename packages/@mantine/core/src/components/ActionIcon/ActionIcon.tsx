@@ -15,7 +15,7 @@ import {
   useStyles,
 } from '../../core';
 import { Loader, LoaderProps } from '../Loader';
-import { Transition } from '../Transition';
+import { Transition, TransitionProps } from '../Transition';
 import { UnstyledButton } from '../UnstyledButton';
 import { ActionIconGroup } from './ActionIconGroup/ActionIconGroup';
 import { ActionIconGroupSection } from './ActionIconGroupSection/ActionIconGroupSection';
@@ -73,6 +73,10 @@ export interface ActionIconProps extends BoxProps, StylesApiProps<ActionIconFact
 
   /** Determines whether button text color with filled variant should depend on `background-color`. If luminosity of the `color` prop is less than `theme.luminosityThreshold`, then `theme.white` will be used for text color, otherwise `theme.black`. Overrides `theme.autoContrast`. */
   autoContrast?: boolean;
+
+  overrideTransitionProps?:
+    | null
+    | ((tp: Omit<TransitionProps, 'children'>) => Omit<TransitionProps, 'children'>);
 }
 
 export type ActionIconFactory = PolymorphicFactory<{
@@ -163,13 +167,36 @@ export const ActionIcon = polymorphicFactory<ActionIconFactory>((_props, ref) =>
       ref={ref}
       mod={[{ loading, disabled: disabled || dataDisabled }, mod]}
     >
-      <Transition mounted={!!loading} transition="slide-down" duration={150}>
-        {(transitionStyles) => (
-          <Box component="span" {...getStyles('loader', { style: transitionStyles })} aria-hidden>
-            <Loader color="var(--ai-color)" size="calc(var(--ai-size) * 0.55)" {...loaderProps} />
-          </Box>
-        )}
-      </Transition>
+      {props.overrideTransitionProps === null ? (
+        loading ? (
+          <Loader
+            color="var(--ai-color)"
+            size="calc(var(--ai-size) * 0.55)"
+            styles={{
+              root: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              },
+            }}
+            {...loaderProps}
+          />
+        ) : null
+      ) : (
+        <Transition
+          {...(props.overrideTransitionProps ?? ((id) => id))({
+            mounted: !!loading,
+            duration: 150,
+            transition: 'slide-down',
+          })}
+        >
+          {(transitionStyles) => (
+            <Box component="span" {...getStyles('loader', { style: transitionStyles })} aria-hidden>
+              <Loader color="var(--ai-color)" size="calc(var(--ai-size) * 0.55)" {...loaderProps} />
+            </Box>
+          )}
+        </Transition>
+      )}
 
       <Box component="span" mod={{ loading }} {...getStyles('icon')}>
         {children}

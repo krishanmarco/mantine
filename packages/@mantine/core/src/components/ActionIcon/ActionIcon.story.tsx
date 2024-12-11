@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import { DEFAULT_THEME, MantineThemeProvider, rem } from '../../core';
 import { ActionIcon, ActionIconProps } from './ActionIcon';
@@ -210,6 +211,36 @@ export function Loading() {
         $$
       </ActionIcon>
       <ActionIcon loading variant="subtle" color="orange" size="lg">
+        $$
+      </ActionIcon>
+    </div>
+  );
+}
+
+export function ToggleLoading() {
+  const [loading, setLoading] = useState(false);
+  return (
+    <div style={{ padding: 40, display: 'flex', gap: 20 }}>
+      <ActionIcon loading={loading} size="lg">
+        $$
+      </ActionIcon>
+
+      <ActionIcon onClick={() => setLoading((l) => !l)} size="lg">
+        $$
+      </ActionIcon>
+    </div>
+  );
+}
+
+export function ToggleLoadingWithoutTransition() {
+  const [loading, setLoading] = useState(false);
+  return (
+    <div style={{ padding: 40, display: 'flex', gap: 20 }}>
+      <ActionIcon loading={loading} size="lg" overrideTransitionProps={null}>
+        $$
+      </ActionIcon>
+
+      <ActionIcon onClick={() => setLoading((l) => !l)} size="lg">
         $$
       </ActionIcon>
     </div>
